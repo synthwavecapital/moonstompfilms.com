@@ -1,0 +1,587 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Moonstomp Films</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=UnifrakturMaguntia&family=Syne:wght@400;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --black: #0a0a0a;
+      --white: #f2ede6;
+      --red: #c0392b;
+      --gray: #1a1a1a;
+      --mid: #2d2d2d;
+    }
+
+    *, *::before, *::after {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    html, body {
+      height: 100%;
+    }
+
+    body {
+      background-color: var(--black);
+      color: var(--white);
+      font-family: 'Syne', sans-serif;
+      overflow-x: hidden;
+      cursor: crosshair;
+    }
+
+    /* ---- NOISE OVERLAY ---- */
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='1'/%3E%3C/svg%3E");
+      opacity: 0.04;
+      pointer-events: none;
+      z-index: 100;
+    }
+
+    /* ---- RIPPED EDGE TOP ---- */
+    .rip-top {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 60px;
+      overflow: hidden;
+      z-index: 10;
+    }
+
+    /* ---- LAYOUT ---- */
+    .page {
+      min-height: 100vh;
+      display: grid;
+      grid-template-rows: auto 1fr auto;
+      position: relative;
+    }
+
+    /* ---- HEADER STRIPE ---- */
+    .header-stripe {
+      background: var(--red);
+      height: 4px;
+      width: 100%;
+    }
+
+    /* ---- MAIN ---- */
+    main {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 60px 24px 40px;
+      position: relative;
+      text-align: center;
+    }
+
+    /* ---- LOGO FIGURE ---- */
+    .logo-figure {
+      width: clamp(160px, 25vw, 260px);
+      margin-bottom: 32px;
+      opacity: 0;
+      transform: translateY(30px);
+      animation: riseIn 0.9s cubic-bezier(0.22, 1, 0.36, 1) 0.2s forwards;
+      filter: invert(1) brightness(1.05);
+    }
+
+    /* The SVG logo we'll embed as inline for control */
+    .logo-svg-wrap svg {
+      width: clamp(160px, 25vw, 260px);
+      height: auto;
+      opacity: 0;
+      transform: translateY(30px);
+      animation: riseIn 0.9s cubic-bezier(0.22, 1, 0.36, 1) 0.2s forwards;
+    }
+
+    /* ---- WORDMARK ---- */
+    .wordmark {
+      font-family: 'UnifrakturMaguntia', serif;
+      font-size: clamp(56px, 10vw, 120px);
+      line-height: 0.9;
+      letter-spacing: -1px;
+      color: var(--white);
+      text-shadow:
+        4px 4px 0 var(--red),
+        6px 6px 0 rgba(192,57,43,0.3);
+      opacity: 0;
+      transform: translateY(20px);
+      animation: riseIn 0.9s cubic-bezier(0.22, 1, 0.36, 1) 0.5s forwards;
+      margin-bottom: 8px;
+    }
+
+    .wordmark span {
+      display: block;
+    }
+
+    /* ---- DIVIDER ---- */
+    .divider {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin: 28px 0 36px;
+      width: 100%;
+      max-width: 480px;
+      opacity: 0;
+      animation: riseIn 0.7s ease 0.75s forwards;
+    }
+
+    .divider-line {
+      flex: 1;
+      height: 1px;
+      background: linear-gradient(to right, transparent, var(--mid), var(--red), var(--mid), transparent);
+    }
+
+    .divider-skull {
+      font-size: 18px;
+      color: var(--red);
+      line-height: 1;
+    }
+
+    /* ---- TAGLINE ---- */
+    .tagline {
+      font-family: 'Syne', sans-serif;
+      font-size: clamp(10px, 1.5vw, 13px);
+      font-weight: 600;
+      letter-spacing: 0.35em;
+      text-transform: uppercase;
+      color: rgba(242, 237, 230, 0.45);
+      margin-bottom: 52px;
+      opacity: 0;
+      animation: riseIn 0.7s ease 0.85s forwards;
+    }
+
+    /* ---- CTA BUTTON ---- */
+    .cta-wrap {
+      opacity: 0;
+      animation: riseIn 0.7s ease 1s forwards;
+    }
+
+    .cta {
+      display: inline-block;
+      padding: 16px 44px;
+      background: transparent;
+      border: 2px solid var(--white);
+      color: var(--white);
+      font-family: 'Syne', sans-serif;
+      font-size: 12px;
+      font-weight: 700;
+      letter-spacing: 0.3em;
+      text-transform: uppercase;
+      text-decoration: none;
+      position: relative;
+      transition: all 0.15s ease;
+      clip-path: polygon(8px 0%, 100% 0%, calc(100% - 8px) 100%, 0% 100%);
+    }
+
+    .cta::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: var(--red);
+      clip-path: polygon(8px 0%, 100% 0%, calc(100% - 8px) 100%, 0% 100%);
+      transform: scaleX(0);
+      transform-origin: left;
+      transition: transform 0.2s ease;
+      z-index: -1;
+    }
+
+    .cta:hover {
+      border-color: var(--red);
+      color: var(--white);
+      letter-spacing: 0.4em;
+    }
+
+    .cta:hover::before {
+      transform: scaleX(1);
+    }
+
+    /* ---- SIDE LABELS ---- */
+    .side-label {
+      position: fixed;
+      font-size: 10px;
+      font-weight: 600;
+      letter-spacing: 0.25em;
+      text-transform: uppercase;
+      color: rgba(242, 237, 230, 0.2);
+      writing-mode: vertical-rl;
+      text-orientation: mixed;
+      user-select: none;
+    }
+
+    .side-label-left {
+      left: 20px;
+      top: 50%;
+      transform: translateY(-50%) rotate(180deg);
+    }
+
+    .side-label-right {
+      right: 20px;
+      top: 50%;
+      transform: translateY(-50%);
+    }
+
+    /* ---- FOOTER ---- */
+    footer {
+      border-top: 1px solid var(--mid);
+      padding: 20px 40px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 10px;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: rgba(242, 237, 230, 0.25);
+      position: relative;
+    }
+
+    footer::before {
+      content: '';
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      width: 100%;
+      height: 3px;
+      background: repeating-linear-gradient(
+        90deg,
+        var(--red) 0px,
+        var(--red) 8px,
+        transparent 8px,
+        transparent 14px
+      );
+    }
+
+    .footer-dot {
+      color: var(--red);
+    }
+
+    /* ---- PUNK LOGO SVG (inline, b&w illustration feel) ---- */
+    .punk-icon {
+      width: clamp(150px, 22vw, 240px);
+      height: auto;
+      margin-bottom: 28px;
+      opacity: 0;
+      transform: translateY(28px);
+      animation: riseIn 0.9s cubic-bezier(0.22, 1, 0.36, 1) 0.15s forwards;
+    }
+
+    /* ---- CORNER MARKS ---- */
+    .corner {
+      position: fixed;
+      width: 20px;
+      height: 20px;
+      opacity: 0.3;
+    }
+    .corner-tl { top: 16px; left: 16px; border-top: 2px solid var(--red); border-left: 2px solid var(--red); }
+    .corner-tr { top: 16px; right: 16px; border-top: 2px solid var(--red); border-right: 2px solid var(--red); }
+    .corner-bl { bottom: 16px; left: 16px; border-bottom: 2px solid var(--red); border-left: 2px solid var(--red); }
+    .corner-br { bottom: 16px; right: 16px; border-bottom: 2px solid var(--red); border-right: 2px solid var(--red); }
+
+    /* ---- ANIMATIONS ---- */
+    @keyframes riseIn {
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    /* ---- CONTACT PAGE ---- */
+    .contact-page {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: var(--black);
+      z-index: 200;
+      align-items: center;
+      justify-content: center;
+      flex-direction: column;
+      padding: 40px;
+    }
+
+    .contact-page.active {
+      display: flex;
+    }
+
+    .contact-inner {
+      max-width: 520px;
+      width: 100%;
+      text-align: center;
+    }
+
+    .contact-title {
+      font-family: 'UnifrakturMaguntia', serif;
+      font-size: clamp(42px, 8vw, 80px);
+      color: var(--white);
+      margin-bottom: 12px;
+      text-shadow: 3px 3px 0 var(--red);
+    }
+
+    .contact-sub {
+      font-size: 11px;
+      letter-spacing: 0.3em;
+      text-transform: uppercase;
+      color: rgba(242, 237, 230, 0.35);
+      margin-bottom: 48px;
+    }
+
+    .contact-form {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    .contact-form input,
+    .contact-form textarea {
+      background: var(--gray);
+      border: 1px solid var(--mid);
+      border-bottom: 2px solid var(--red);
+      color: var(--white);
+      font-family: 'Syne', sans-serif;
+      font-size: 13px;
+      padding: 14px 16px;
+      outline: none;
+      transition: border-color 0.2s;
+      resize: none;
+    }
+
+    .contact-form input::placeholder,
+    .contact-form textarea::placeholder {
+      color: rgba(242,237,230,0.25);
+      letter-spacing: 0.1em;
+      font-size: 11px;
+      text-transform: uppercase;
+    }
+
+    .contact-form input:focus,
+    .contact-form textarea:focus {
+      border-bottom-color: var(--white);
+    }
+
+    .contact-form textarea {
+      height: 120px;
+    }
+
+    .send-btn {
+      padding: 15px;
+      background: var(--red);
+      border: none;
+      color: var(--white);
+      font-family: 'Syne', sans-serif;
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.35em;
+      text-transform: uppercase;
+      cursor: crosshair;
+      transition: background 0.15s, letter-spacing 0.15s;
+      clip-path: polygon(8px 0%, 100% 0%, calc(100% - 8px) 100%, 0% 100%);
+    }
+
+    .send-btn:hover {
+      background: var(--white);
+      color: var(--black);
+      letter-spacing: 0.45em;
+    }
+
+    .close-btn {
+      margin-top: 32px;
+      background: none;
+      border: none;
+      color: rgba(242,237,230,0.3);
+      font-family: 'Syne', sans-serif;
+      font-size: 10px;
+      letter-spacing: 0.3em;
+      text-transform: uppercase;
+      cursor: crosshair;
+      transition: color 0.15s;
+    }
+
+    .close-btn:hover {
+      color: var(--white);
+    }
+
+    /* success message */
+    .form-success {
+      display: none;
+      font-size: 13px;
+      letter-spacing: 0.1em;
+      color: var(--red);
+      margin-top: 12px;
+      text-transform: uppercase;
+    }
+
+    /* ---- MOBILE ---- */
+    @media (max-width: 600px) {
+      .side-label { display: none; }
+      footer { padding: 16px 20px; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Corner marks -->
+  <div class="corner corner-tl"></div>
+  <div class="corner corner-tr"></div>
+  <div class="corner corner-bl"></div>
+  <div class="corner corner-br"></div>
+
+  <!-- Side labels -->
+  <div class="side-label side-label-left">Est. 2022</div>
+  <div class="side-label side-label-right">Austin TX</div>
+
+  <!-- Main page -->
+  <div class="page" id="mainPage">
+    <div class="header-stripe"></div>
+
+    <main>
+
+      <!-- Punk character SVG (traced from the uploaded logo concept) -->
+      <svg class="punk-icon" viewBox="0 0 300 340" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <!-- Mohawk spikes -->
+        <polygon points="150,10 143,55 157,55" fill="#f2ede6"/>
+        <polygon points="138,14 128,58 142,56" fill="#f2ede6"/>
+        <polygon points="162,14 172,58 158,56" fill="#f2ede6"/>
+        <polygon points="127,20 114,62 130,59" fill="#f2ede6"/>
+        <polygon points="173,20 186,62 170,59" fill="#f2ede6"/>
+        <polygon points="118,28 102,68 120,65" fill="#f2ede6"/>
+        <polygon points="182,28 198,68 180,65" fill="#f2ede6"/>
+        <!-- Head -->
+        <ellipse cx="150" cy="88" rx="36" ry="32" fill="#f2ede6"/>
+        <!-- Beard -->
+        <path d="M128,106 Q150,124 172,106 L168,120 Q150,136 132,120 Z" fill="#0a0a0a"/>
+        <!-- Eyes -->
+        <rect x="136" y="80" width="10" height="7" rx="2" fill="#0a0a0a"/>
+        <rect x="154" y="80" width="10" height="7" rx="2" fill="#0a0a0a"/>
+        <!-- Scowl line -->
+        <path d="M138,100 Q150,96 162,100" stroke="#0a0a0a" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+
+        <!-- Body / jacket -->
+        <path d="M114,115 L90,210 L130,210 L140,165 L160,165 L170,210 L210,210 L186,115 Z" fill="#f2ede6"/>
+        <!-- Jacket lapels -->
+        <path d="M150,120 L130,150 L150,145 Z" fill="#0a0a0a"/>
+        <path d="M150,120 L170,150 L150,145 Z" fill="#0a0a0a"/>
+        <!-- Studs on jacket -->
+        <circle cx="100" cy="140" r="3" fill="#c0392b"/>
+        <circle cx="100" cy="155" r="3" fill="#c0392b"/>
+        <circle cx="200" cy="140" r="3" fill="#c0392b"/>
+        <circle cx="200" cy="155" r="3" fill="#c0392b"/>
+
+        <!-- Left arm (raised fist) -->
+        <path d="M114,118 Q80,130 68,90" stroke="#f2ede6" stroke-width="24" fill="none" stroke-linecap="round"/>
+        <!-- Fist -->
+        <ellipse cx="64" cy="82" rx="16" ry="13" fill="#f2ede6"/>
+        <line x1="55" y1="82" x2="73" y2="82" stroke="#0a0a0a" stroke-width="1.5"/>
+
+        <!-- Right arm (down) -->
+        <path d="M186,118 Q210,145 218,180" stroke="#f2ede6" stroke-width="22" fill="none" stroke-linecap="round"/>
+        <!-- Right hand -->
+        <ellipse cx="220" cy="188" rx="12" ry="10" fill="#f2ede6"/>
+
+        <!-- Pants -->
+        <rect x="125" y="208" width="22" height="55" rx="4" fill="#f2ede6"/>
+        <rect x="153" y="208" width="22" height="55" rx="4" fill="#f2ede6"/>
+
+        <!-- Left boot (raised/kicking) -->
+        <rect x="108" y="255" width="28" height="48" rx="6" fill="#f2ede6"/>
+        <rect x="96" y="292" width="42" height="18" rx="5" fill="#f2ede6"/>
+        <!-- boot laces -->
+        <line x1="116" y1="262" x2="128" y2="262" stroke="#0a0a0a" stroke-width="1.5"/>
+        <line x1="116" y1="270" x2="128" y2="270" stroke="#0a0a0a" stroke-width="1.5"/>
+        <line x1="116" y1="278" x2="128" y2="278" stroke="#0a0a0a" stroke-width="1.5"/>
+
+        <!-- Right boot (on ground) -->
+        <rect x="153" y="258" width="28" height="48" rx="6" fill="#f2ede6"/>
+        <rect x="153" y="294" width="44" height="18" rx="5" fill="#f2ede6"/>
+        <line x1="161" y1="265" x2="173" y2="265" stroke="#0a0a0a" stroke-width="1.5"/>
+        <line x1="161" y1="273" x2="173" y2="273" stroke="#0a0a0a" stroke-width="1.5"/>
+        <line x1="161" y1="281" x2="173" y2="281" stroke="#0a0a0a" stroke-width="1.5"/>
+      </svg>
+
+      <!-- Wordmark -->
+      <h1 class="wordmark">
+        <span>Moonstomp</span>
+        <span>Films</span>
+      </h1>
+
+      <!-- Divider -->
+      <div class="divider">
+        <div class="divider-line"></div>
+        <span class="divider-skull">✦</span>
+        <div class="divider-line"></div>
+      </div>
+
+      <p class="tagline"></p>
+
+      <div class="cta-wrap">
+        <a href="#contact" class="cta" id="contactBtn" onclick="openContact(event)">Get In Touch</a>
+      </div>
+
+    </main>
+
+    <footer>
+      <span>© 2026 Moonstomp Films</span>
+      <span><span class="footer-dot">✦</span></span>
+      <span>www.moonstompfilms.com</span>
+    </footer>
+  </div>
+
+  <!-- Contact Overlay -->
+  <div class="contact-page" id="contactPage">
+    <div class="contact-inner">
+      <h2 class="contact-title">Contact</h2>
+      <p class="contact-sub">We'd love to hear from you</p>
+
+      <div class="contact-form" id="contactForm">
+        <input type="text" placeholder="Name" id="nameInput" />
+        <input type="email" placeholder="Email" id="emailInput" />
+        <textarea placeholder="Message" id="msgInput"></textarea>
+        <button class="send-btn" onclick="submitForm()">Send It</button>
+        <p class="form-success" id="formSuccess">✦ &nbsp; Message received. We'll be in touch.</p>
+      </div>
+
+      <button class="close-btn" onclick="closeContact()">← Back</button>
+    </div>
+  </div>
+
+  <script>
+    function openContact(e) {
+      e.preventDefault();
+      document.getElementById('contactPage').classList.add('active');
+      document.body.style.overflow = 'hidden';
+    }
+
+    function closeContact() {
+      document.getElementById('contactPage').classList.remove('active');
+      document.body.style.overflow = '';
+    }
+
+    function submitForm() {
+      const name = document.getElementById('nameInput').value.trim();
+      const email = document.getElementById('emailInput').value.trim();
+      const msg = document.getElementById('msgInput').value.trim();
+
+      if (!name || !email || !msg) {
+        alert('Please fill out all fields.');
+        return;
+      }
+
+      // Show success (in production, wire this to a backend/formspree/etc.)
+      document.getElementById('formSuccess').style.display = 'block';
+      document.getElementById('nameInput').value = '';
+      document.getElementById('emailInput').value = '';
+      document.getElementById('msgInput').value = '';
+    }
+
+    // Close on escape
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape') closeContact();
+    });
+  </script>
+</body>
+</html>
