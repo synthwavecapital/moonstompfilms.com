@@ -427,6 +427,7 @@
       border-bottom: 2px solid var(--red);
       padding-bottom: 4px;
       margin-bottom: 40px;
+      display: block;
       transition: color 0.15s, border-color 0.15s;
     }
 
@@ -554,12 +555,12 @@
     <div class="contact-inner">
       <h2 class="contact-title">Contact</h2>
       <p class="contact-sub">We'd love to hear from you</p>
-      <a href="mailto:contact@moonstompfilms.com" class="contact-email">contact@moonstompfilms.com</a>
+      <a href="/cdn-cgi/l/email-protection#d5b6babba1b4b6a195b8bababba6a1bab8a5b3bcb9b8a6fbb6bab8" class="contact-email"><span class="__cf_email__" data-cfemail="9ffcf0f1ebfefcebdff2f0f0f1ecebf0f2eff9f6f3f2ecb1fcf0f2">[email&#160;protected]</span></a>
       <button class="close-btn" onclick="closeContact()">← Back</button>
     </div>
   </div>
 
-  <script>
+  <script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
     function openContact(e) {
       e.preventDefault();
       document.getElementById('contactPage').classList.add('active');
@@ -567,14 +568,4 @@
     }
 
     function closeContact() {
-      document.getElementById('contactPage').classList.remove('active');
-      document.body.style.overflow = '';
-    }
-
-    // Close on escape
-    document.addEventListener('keydown', (e) => {
-      if (e.key === 'Escape') closeContact();
-    });
-  </script>
-</body>
-</html>
+      document.getE
